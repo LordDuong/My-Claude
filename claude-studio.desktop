@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Claude Studio
+GenericName=AI Chat
+Comment=claude.ai với mascot robot
+Exec=@EXEC@ %U
+Icon=claude-studio
+Terminal=false
+Categories=Network;Chat;Utility;
+Keywords=claude;ai;chat;
+StartupNotify=true
+StartupWMClass=claude-studio
+PrefersNonDefaultGPU=false
+SingleMainWindow=true

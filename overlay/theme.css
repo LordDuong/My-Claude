@@ -1,0 +1,309 @@
+/*
+ * Claude Studio — "Starry Night" liquid-glass theme for claude.ai (dark mode).
+ * Active only while <html data-cs-theme="starry"> is set (see overlay/theme.js).
+ * Sky animations use transform / opacity only. backdrop-filter is the one costly effect:
+ * if the app feels slow with GPU off, lower --cs-glass-blur below.
+ */
+
+/* ===================== palette + claude.ai surface variables ===================== */
+/* claude.ai re-declares its variables on inner .cds-root / [data-mode] elements, so override there too. */
+html[data-cs-theme="starry"]:not([data-mode="light"]),
+html[data-cs-theme="starry"]:not([data-mode="light"]) .cds-root,
+html[data-cs-theme="starry"]:not([data-mode="light"]) [data-mode="dark"] {
+  --cs-glass-blur: 18px !important;
+  --cs-glass-tint: rgba(18, 22, 52, 0.42) !important;
+  --cs-glass-tint-strong: rgba(20, 24, 58, 0.72) !important;
+  --cs-glass-edge: rgba(255, 255, 255, 0.13) !important;
+  --cs-glass-shine: linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.02) 38%, rgba(255, 255, 255, 0) 60%) !important;
+
+  /* claude.ai design-system surfaces → translucent */
+  --cds-page-bg: transparent !important;
+  --cds-surface-0: rgba(6, 9, 26, 0.55) !important;
+  --cds-surface-1: rgba(8, 11, 30, 0.22) !important;
+  --cds-surface-2: var(--cs-glass-tint) !important;
+  --cds-surface-3: var(--cs-glass-tint) !important;
+  --cds-surface-panel: var(--cs-glass-tint) !important;
+  --cds-surface-sidebar: transparent !important;
+  --cds-surface-popover: var(--cs-glass-tint) !important;
+  --cds-tooltip-bg: rgba(14, 18, 44, 0.92) !important;
+  --cds-bg-user-message: rgba(130, 150, 255, 0.16) !important;
+  --cds-fill-card: rgba(255, 255, 255, 0.06) !important;
+  --cds-fill-card-hover: rgba(255, 255, 255, 0.1) !important;
+  --cds-border: rgba(255, 255, 255, 0.1) !important;
+  --clint-surface-warm: var(--cs-glass-tint) !important;
+}
+html[data-cs-theme="starry"]:not([data-mode="light"]) {
+  background: #070a1c !important;
+  color-scheme: dark;
+}
+/* full-screen decorative backdrop layer behind the app frame */
+html[data-cs-theme="starry"]:not([data-mode="light"]) .pointer-events-none.absolute.inset-0.bg-surface-1 {
+  background: transparent !important;
+}
+
+html[data-cs-theme="starry"]:not([data-mode="light"]) body,
+html[data-cs-theme="starry"]:not([data-mode="light"]) main.dframe-content {
+  background: transparent !important;
+}
+
+/* ===================== glass surfaces ===================== */
+/* Sidebar */
+html[data-cs-theme="starry"]:not([data-mode="light"]) aside.dframe-sidebar {
+  background: rgba(12, 16, 42, 0.38) !important;
+  background-image: var(--cs-glass-shine) !important;
+  backdrop-filter: blur(var(--cs-glass-blur)) saturate(150%);
+  border-right: 1px solid var(--cs-glass-edge);
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04), 8px 0 32px rgba(0, 0, 0, 0.25);
+}
+html[data-cs-theme="starry"]:not([data-mode="light"]) aside.dframe-sidebar .dframe-nav-scroll {
+  background: transparent !important;
+}
+
+/* Chat composer (the input box) */
+html[data-cs-theme="starry"]:not([data-mode="light"]) [data-cds="ChatComposer"] .bg-surface-popover {
+  background-color: rgba(22, 28, 66, 0.5) !important;
+  background-image: var(--cs-glass-shine);
+  backdrop-filter: blur(var(--cs-glass-blur)) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 12px 40px rgba(4, 6, 24, 0.55);
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+html[data-cs-theme="starry"]:not([data-mode="light"]) [data-cds="ChatComposer"]:focus-within .bg-surface-popover {
+  border-color: rgba(150, 175, 255, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 0 0 1px rgba(140, 165, 255, 0.25),
+    0 0 28px rgba(110, 140, 255, 0.35),
+    0 12px 40px rgba(4, 6, 24, 0.55);
+}
+
+/* Menus, popovers, dialogs, cards */
+html[data-cs-theme="starry"]:not([data-mode="light"]) [data-cds-overlay],
+html[data-cs-theme="starry"]:not([data-mode="light"]) [role="dialog"],
+html[data-cs-theme="starry"]:not([data-mode="light"]) [role="menu"] {
+  background-color: var(--cs-glass-tint-strong) !important;
+  background-image: var(--cs-glass-shine);
+  backdrop-filter: blur(calc(var(--cs-glass-blur) + 6px)) saturate(160%);
+  border: 1px solid var(--cs-glass-edge);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+html[data-cs-theme="starry"]:not([data-mode="light"]) .bg-surface-popover:not([data-cds="ChatComposer"] *) {
+  background-color: var(--cs-glass-tint-strong) !important;
+  backdrop-filter: blur(var(--cs-glass-blur)) saturate(150%);
+}
+html[data-cs-theme="starry"]:not([data-mode="light"]) .bg-bg-000,
+html[data-cs-theme="starry"]:not([data-mode="light"]) .bg-bg-100 {
+  backdrop-filter: blur(calc(var(--cs-glass-blur) * 0.6));
+}
+
+/* Code blocks stay readable */
+html[data-cs-theme="starry"]:not([data-mode="light"]) pre {
+  background-color: rgba(6, 8, 22, 0.72) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Scrollbars */
+html[data-cs-theme="starry"]:not([data-mode="light"]) ::-webkit-scrollbar-thumb {
+  background: rgba(170, 185, 255, 0.22);
+  border-radius: 8px;
+}
+
+/* ===================== the sky (Starry Night homage) ===================== */
+#cs-sky {
+  display: none;
+}
+html[data-cs-theme="starry"]:not([data-mode="light"]) #cs-sky {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  background: #0b2260;
+}
+#cs-sky > * {
+  position: absolute;
+  pointer-events: none;
+}
+#cs-sky .cs-paint {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* rotating swirls (canvas painted once, spun by CSS) */
+#cs-sky .cs-swirl2 {
+  transform: translate(-50%, -50%);
+}
+#cs-sky .cs-swirl2 canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: cs-spin 70s linear infinite, cs-breathe 9s ease-in-out infinite;
+  will-change: transform;
+}
+#cs-sky .cs-swirl2.sw1 canvas { animation-duration: 55s, 7s; }
+@keyframes cs-spin { to { transform: rotate(var(--spin, 360deg)); } }
+@keyframes cs-breathe {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+/* flowing wind / cloud bands */
+#cs-sky .cs-wind {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+#cs-sky .cs-wind-stroke {
+  stroke: var(--c);
+  stroke-width: var(--w);
+  stroke-linecap: round;
+  stroke-dasharray: var(--dash);
+  opacity: var(--o);
+  animation: cs-flow var(--dur) linear infinite;
+  animation-delay: var(--delay);
+}
+@keyframes cs-flow { to { stroke-dashoffset: var(--dl); } }
+
+/* a soft moving light across the sky */
+#cs-sky .cs-lightsweep {
+  left: -30%;
+  top: -20%;
+  width: 90vmax;
+  height: 90vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 236, 160, 0.16), rgba(255, 236, 160, 0) 60%);
+  animation: cs-sweep 38s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes cs-sweep {
+  0% { transform: translate(0, 0); opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { transform: translate(85vw, 18vh); opacity: 0.7; }
+}
+
+/* stars + moon with brush-ring halos */
+#cs-sky .cs-vstar,
+#cs-sky .cs-moon2 {
+  width: var(--size, 60px);
+  height: var(--size, 60px);
+  margin: calc(var(--size, 60px) / -2) 0 0 calc(var(--size, 60px) / -2);
+}
+#cs-sky .cs-halo {
+  position: absolute;
+  inset: -45%;
+  border-radius: 50%;
+  opacity: 0.75;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 248, 210, 0.75) 0deg 2.5deg, rgba(255, 244, 200, 0.25) 2.5deg 4deg, rgba(255, 248, 210, 0) 4deg 6.5deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 37%, #000 39% 43%, transparent 46% 53%, rgba(0, 0, 0, 0.7) 55% 58%, transparent 61% 100%);
+  mask: radial-gradient(circle, transparent 0 37%, #000 39% 43%, transparent 46% 53%, rgba(0, 0, 0, 0.7) 55% 58%, transparent 61% 100%);
+  animation: cs-spin var(--spin-dur, 50s) linear infinite;
+  will-change: transform;
+}
+#cs-sky .cs-halo.h2 {
+  inset: -80%;
+  opacity: 0.35;
+  background: repeating-conic-gradient(from 4deg, rgba(210, 228, 245, 0.7) 0deg 2deg, rgba(210, 228, 245, 0) 2deg 7deg);
+  animation-direction: reverse;
+  animation-duration: calc(var(--spin-dur, 50s) * 1.6);
+}
+#cs-sky .cs-core {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffef0 0 18%, #fff1a0 32%, #f5d64e 48%, rgba(245, 214, 78, 0.35) 62%, rgba(245, 214, 78, 0) 72%);
+  box-shadow: 0 0 calc(var(--size, 60px) * 0.5) rgba(255, 230, 130, 0.45);
+  animation: cs-pulse-star var(--d, 3s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes cs-pulse-star {
+  0%, 100% { transform: scale(0.88); opacity: 0.82; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+#cs-sky .cs-moon2 .cs-halo { inset: -42%; --spin-dur: 90s; opacity: 0.6; }
+#cs-sky .cs-moon2 .cs-halo.h2 { inset: -68%; opacity: 0.3; }
+#cs-sky .cs-moon-disc {
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 246, 190, 0.95) 0 45%, rgba(250, 232, 140, 0.6) 60%, rgba(250, 232, 140, 0) 72%);
+  box-shadow: 0 0 calc(var(--size) * 0.8) rgba(255, 222, 120, 0.45);
+  animation: cs-moon-pulse 8s ease-in-out infinite;
+}
+#cs-sky .cs-crescent {
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 55%, #ffd23a 0 40%, #f0a926 75%);
+  -webkit-mask: radial-gradient(circle at 70% 36%, transparent 0 44%, #000 46%);
+  mask: radial-gradient(circle at 70% 36%, transparent 0 44%, #000 46%);
+  transform: rotate(-12deg);
+}
+@keyframes cs-moon-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+/* cypress in the foreground, swaying */
+#cs-sky .cs-cypress {
+  /* just right of claude.ai's sidebar so it isn't hidden under the glass */
+  left: calc(var(--static-sidebar-width, 0px) - 2vw);
+  bottom: 0;
+  width: 20vw;
+  height: 95vh;
+  transform-origin: 50% 100%;
+  animation: cs-sway 11s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes cs-sway {
+  0% { transform: rotate(-0.9deg) skewX(0.6deg); }
+  100% { transform: rotate(0.9deg) skewX(-0.6deg); }
+}
+
+/* village window lights */
+#cs-sky .cs-windows { inset: 0; }
+#cs-sky .cs-windows span {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #ffe27a;
+  box-shadow: 0 0 8px 3px rgba(255, 210, 90, 0.55);
+  animation: cs-window var(--d, 4s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes cs-window {
+  0%, 100% { opacity: 0.95; }
+  40% { opacity: 0.55; }
+  55% { opacity: 1; }
+  70% { opacity: 0.7; }
+}
+
+/* readability veil over the painting */
+#cs-sky .cs-veil {
+  inset: 0;
+  background: linear-gradient(180deg, rgba(4, 10, 32, var(--cs-veil, 0.34)), rgba(4, 10, 32, calc(var(--cs-veil, 0.34) + 0.1)));
+}
+
+/* ===================== perf / accessibility ===================== */
+html[data-cs-hidden] #cs-sky *,
+html[data-cs-hidden] #cs-sky .cs-wind-stroke,
+html[data-cs-hidden] #cs-root * {
+  animation-play-state: paused !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  #cs-sky > div {
+    animation: none !important;
+  }
+}
+
+/* ✦ button state on the mascot panel */
+#cs-root .cs-theme[aria-pressed="false"] { opacity: 0.4; }
+#cs-root .cs-theme[aria-pressed="true"] { color: #ffe27a; }

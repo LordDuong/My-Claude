@@ -1,0 +1,583 @@
+/*
+ * Claude Studio — mascot overlay styles.
+ * Everything is scoped under #cs-root. Animations use transform / opacity only,
+ * so they stay smooth even with hardware acceleration disabled.
+ */
+
+#cs-root {
+  /* classic Claude orange */
+  --cs-body: #d97757;
+  --cs-shade: #b5573a;
+  --cs-hi: #ee9b78;
+  --cs-eye: #161210;
+  --cs-hair: #ffd43b;
+  --cs-hair-l: #fff6b0;
+  --cs-hair-d: #e09a12;
+
+  position: fixed !important;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  top: auto;
+  z-index: 2147483000;
+  pointer-events: none;
+  transform: translate(-24px, -150px);
+  transition: transform 0.3s ease;
+  font: 600 12px/1.2 system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif;
+  color: #e8eef6;
+  user-select: none;
+  -webkit-user-select: none;
+  contain: layout style;
+}
+#cs-root *,
+#cs-root *::before,
+#cs-root *::after {
+  box-sizing: border-box;
+}
+#cs-root[hidden] {
+  display: none !important;
+}
+#cs-root.cs-dragging {
+  transition: none;
+}
+
+/* ---------- effort palettes ---------- */
+#cs-root[data-effort="medium"] { --cs-eye: #3fd2ff; }
+#cs-root[data-effort="high"] { --cs-body: #e3834f; --cs-hi: #f7ad80; }
+#cs-root[data-effort="extra"] { --cs-body: #ea8d4f; --cs-hi: #ffbe8a; --cs-shade: #bf6236; }
+#cs-root[data-effort="max"] { --cs-body: #f39a55; --cs-hi: #ffcb9a; --cs-shade: #c8683a; --cs-hair: #ffe14a; }
+
+/* ---------- layout ---------- */
+#cs-root .cs-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+#cs-root .cs-stage {
+  position: relative;
+  width: 104px;
+  height: 108px;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+}
+#cs-root.cs-dragging .cs-stage,
+#cs-root.cs-dragging .cs-mini {
+  cursor: grabbing;
+}
+#cs-root .cs-scale,
+#cs-root .cs-shake,
+#cs-root .cs-float,
+#cs-root .cs-morph {
+  position: absolute;
+  inset: 0;
+}
+#cs-root .cs-scale {
+  transform-origin: 50% 100%;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+#cs-root[data-effort="extra"] .cs-scale {
+  transform: scale(1.2);
+}
+#cs-root[data-effort="max"] .cs-scale {
+  transform: scale(1.5);
+}
+
+/* idle float */
+#cs-root .cs-float {
+  animation: cs-float 2.4s steps(1) infinite;
+}
+@keyframes cs-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* max: constant slight shake */
+#cs-root[data-effort="max"] .cs-shake {
+  animation: cs-shake 0.2s steps(1) infinite;
+}
+@keyframes cs-shake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(2px, 0); }
+  50% { transform: translate(0, 2px); }
+  75% { transform: translate(-2px, 0); }
+  100% { transform: translate(0, 0); }
+}
+
+/* transformation (~0.8s) on effort change */
+#cs-root.cs-morphing .cs-morph {
+  animation: cs-morph 0.8s steps(8);
+}
+@keyframes cs-morph {
+  0% { transform: scale(1) rotate(0); }
+  22% { transform: scale(1.18, 0.84); }
+  45% { transform: scale(0.86, 1.16) rotate(-5deg); }
+  68% { transform: scale(1.07, 0.95) rotate(3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+/* pixel dust clouds on transform */
+#cs-root .cs-smoke {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+#cs-root .cs-puff {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  transform-origin: 50% 100%;
+}
+#cs-root .cs-puff svg { display: block; width: 100%; height: 100%; overflow: visible; }
+#cs-root .sm-d { fill: #a9adb5; }
+#cs-root .sm-m { fill: #e4e6ea; }
+#cs-root .sm-l { fill: #ffffff; }
+#cs-root.cs-morphing .cs-puff {
+  animation: cs-puff 1.1s steps(9) both;
+  animation-delay: var(--delay);
+}
+@keyframes cs-puff {
+  0% { opacity: 1; transform: translate(0, 0) scale(0.25) scaleX(var(--flip)); }
+  45% { opacity: 1; transform: translate(calc(var(--tx) * 0.8), calc(var(--ty) * 0.6)) scale(var(--s)) scaleX(var(--flip)); }
+  75% { opacity: 0.85; }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(calc(var(--s) * 0.7)) scaleX(var(--flip)); }
+}
+
+/* poke (click) */
+#cs-root.cs-poke .cs-morph {
+  animation: cs-poke 0.6s steps(6);
+}
+@keyframes cs-poke {
+  0% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-10px) scale(1.05, 0.95); }
+  70% { transform: translateY(0) scale(0.97, 1.03); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* ---------- pixel bot (1 SVG unit = 4 CSS px, crisp edges) ---------- */
+#cs-root svg.cs-bot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+#cs-root .px-B { fill: var(--cs-body); transition: fill 0.8s steps(4); }
+#cs-root .px-S { fill: var(--cs-shade); transition: fill 0.8s steps(4); }
+#cs-root .px-H { fill: var(--cs-hi); transition: fill 0.8s steps(4); }
+#cs-root .px-K { fill: var(--cs-eye); transition: fill 0.4s steps(2); }
+#cs-root .px-W { fill: #ffffff; }
+#cs-root .px-Y { fill: var(--cs-hair); }
+#cs-root .px-L { fill: var(--cs-hair-l); }
+#cs-root .px-D { fill: var(--cs-hair-d); }
+#cs-root .px-C { fill: #7fe0ff; }
+#cs-root .px-E { fill: #c98700; }
+#cs-root .px-F { fill: #f7a516; }
+#cs-root .px-G { fill: #ffd23a; }
+#cs-root .px-I { fill: #fff8d2; }
+#cs-root .px-Q { fill: #fffbe8; opacity: 0.22; }
+#cs-root .px-O { fill: #3b1a0e; }
+/* dark pixel outline only for the powered-up forms (contrast against the flames) */
+#cs-root .cs-outline { opacity: 0; transition: opacity 0.3s steps(2); }
+#cs-root[data-effort="high"] .cs-outline,
+#cs-root[data-effort="extra"] .cs-outline,
+#cs-root[data-effort="max"] .cs-outline { opacity: 1; }
+#cs-root .cs-hair .px-O { fill: #6b3a00; }
+
+/* eyes: blink + mood */
+#cs-root .cs-eye {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  transition: transform 0.08s steps(1);
+}
+#cs-root.cs-blink .cs-eye { transform: scaleY(0.5); }
+#cs-root .cs-eyes-a { opacity: 0; }
+#cs-root[data-effort="high"] .cs-eyes-a,
+#cs-root[data-effort="extra"] .cs-eyes-a,
+#cs-root[data-effort="max"] .cs-eyes-a { opacity: 1; }
+#cs-root[data-effort="high"] .cs-eyes-n,
+#cs-root[data-effort="extra"] .cs-eyes-n,
+#cs-root[data-effort="max"] .cs-eyes-n { opacity: 0; }
+
+/* Super-warrior pixel hair */
+#cs-root .cs-hair {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: scaleY(0);
+  transition: transform 0.8s steps(5), opacity 0.2s steps(1);
+}
+#cs-root[data-effort="high"] .cs-hair-s,
+#cs-root[data-effort="extra"] .cs-hair-b,
+#cs-root[data-effort="max"] .cs-hair-b { opacity: 1; transform: none; }
+#cs-root .cs-hair-in { transform-box: fill-box; transform-origin: 50% 100%; }
+#cs-root[data-effort="max"] .cs-hair-in { animation: cs-hair-bob 0.3s steps(1) infinite; }
+@keyframes cs-hair-bob {
+  0% { transform: none; }
+  50% { transform: translateY(-0.5px) scaleY(1.05); }
+}
+#cs-root[data-effort="max"] .px-L { animation: cs-blinkpx 0.24s steps(1) infinite; }
+@keyframes cs-blinkpx {
+  0% { fill: var(--cs-hair-l); }
+  50% { fill: #ffffff; }
+}
+
+/* ---------- pixel aura (behind the bot) ---------- */
+#cs-root svg.cs-aura {
+  position: absolute;
+  left: -48px;
+  top: -96px;
+  width: 200px;
+  height: 212px;
+  overflow: visible;
+  pointer-events: none;
+}
+#cs-root .cs-glow,
+#cs-root .cs-flames,
+#cs-root .cs-ring,
+#cs-root .cs-ground {
+  opacity: 0;
+  transition: opacity 0.4s steps(3);
+}
+#cs-root .cs-flames,
+#cs-root .cs-glow {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+#cs-root .cs-fr { opacity: 0; }
+@keyframes cs-frame3 {
+  0% { opacity: 1; }
+  33.333% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* medium: thin marching blue pixel ring */
+#cs-root[data-effort="medium"] .cs-ring { opacity: 1; }
+#cs-root[data-effort="medium"] .cs-ring .cs-fr { animation: cs-frame3 0.9s steps(1, end) infinite; }
+#cs-root[data-effort="medium"] .cs-ring .f1 { animation-delay: -0.3s; }
+#cs-root[data-effort="medium"] .cs-ring .f2 { animation-delay: -0.6s; }
+
+/* high / extra / max: pixel flame aura (flip-book) */
+#cs-root[data-effort="high"] .cs-flames { opacity: 0.9; transform: scale(0.5, 0.45); }
+#cs-root[data-effort="extra"] .cs-flames { opacity: 1; transform: scale(0.78, 0.72); }
+#cs-root[data-effort="max"] .cs-flames { opacity: 0.92; transform: none; }
+#cs-root[data-effort="high"] .cs-flames .cs-fr,
+#cs-root[data-effort="extra"] .cs-flames .cs-fr,
+#cs-root[data-effort="max"] .cs-flames .cs-fr { animation: cs-frame3 0.42s steps(1, end) infinite; }
+#cs-root[data-effort="high"] .cs-flames .cs-fr { animation-duration: 0.6s; }
+#cs-root .cs-flames .f1 { animation-delay: -0.14s !important; }
+#cs-root .cs-flames .f2 { animation-delay: -0.28s !important; }
+#cs-root[data-effort="high"] .cs-flames .f1 { animation-delay: -0.2s !important; }
+#cs-root[data-effort="high"] .cs-flames .f2 { animation-delay: -0.4s !important; }
+
+#cs-root[data-effort="extra"] .cs-glow { opacity: 0.6; transform: scale(0.85); }
+#cs-root[data-effort="max"] .cs-glow { opacity: 1; animation: cs-glowpx 0.5s steps(2) infinite; }
+@keyframes cs-glowpx {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+#cs-root[data-effort="extra"] .cs-ground { opacity: 0.6; }
+#cs-root[data-effort="max"] .cs-ground { opacity: 1; animation: cs-glowpx 0.36s steps(2) infinite; }
+#cs-root .cs-ground .px-L { fill: #fff3a0; }
+
+/* ---------- square pixel sparks (extra / max) ---------- */
+#cs-root .cs-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+#cs-root[data-effort="extra"] .cs-particles { opacity: 0.6; }
+#cs-root[data-effort="max"] .cs-particles { opacity: 1; }
+#cs-root .cs-p {
+  position: absolute;
+  bottom: 0;
+  left: var(--x);
+  width: var(--s);
+  height: var(--s);
+  background: #6fd6ff;
+  opacity: 0;
+}
+#cs-root .cs-p.cs-p-w { background: #ffffff; }
+#cs-root[data-effort="extra"] .cs-p,
+#cs-root[data-effort="max"] .cs-p {
+  animation: cs-rise var(--d) steps(12) infinite;
+  animation-delay: var(--delay);
+}
+@keyframes cs-rise {
+  0% { transform: translate(0, 0); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translate(var(--drift), -140px); opacity: 0; }
+}
+
+/* ---------- pixel lightning (high / extra / max) ---------- */
+#cs-root .cs-bolt {
+  position: absolute;
+  width: 20px;
+  height: 32px;
+  pointer-events: none;
+  opacity: 0;
+}
+#cs-root .cs-bolt svg { display: block; width: 100%; height: 100%; }
+#cs-root .cs-bolt.b1 { left: -20px; top: 18px; }
+#cs-root .cs-bolt.b2 { right: -18px; top: 40px; transform: scaleX(-1); }
+#cs-root .cs-bolt.b3 { left: 8px; top: -32px; transform: scale(0.75); }
+#cs-root[data-effort="high"] .cs-bolt { animation: cs-zap 2.6s steps(1) infinite; }
+#cs-root[data-effort="high"] .cs-bolt.b2 { animation-delay: -1.1s; }
+#cs-root[data-effort="high"] .cs-bolt.b3 { display: none; }
+#cs-root[data-effort="extra"] .cs-bolt { animation: cs-zap 1.8s steps(1) infinite; }
+#cs-root[data-effort="extra"] .cs-bolt.b2 { animation-delay: -0.7s; }
+#cs-root[data-effort="extra"] .cs-bolt.b3 { animation-delay: -1.2s; }
+#cs-root[data-effort="max"] .cs-bolt { animation: cs-zap 1.1s steps(1) infinite; }
+#cs-root[data-effort="max"] .cs-bolt.b2 { animation-delay: -0.45s; }
+#cs-root[data-effort="max"] .cs-bolt.b3 { animation-delay: -0.8s; }
+@keyframes cs-zap {
+  0%, 100% { opacity: 0; }
+  8% { opacity: 1; }
+  12% { opacity: 0; }
+  16% { opacity: 1; }
+  22% { opacity: 0; }
+}
+
+/* ---------- speech bubble ---------- */
+#cs-root .cs-say {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 2;
+  transform: translate(-50%, 4px);
+  white-space: nowrap;
+  background: #fff;
+  color: #1c2430;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+#cs-root[data-effort="extra"] .cs-say { bottom: calc(100% + 28px); }
+#cs-root[data-effort="max"] .cs-say { bottom: calc(100% + 62px); }
+#cs-root .cs-say.cs-show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- effort panel ---------- */
+#cs-root .cs-panel {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(24, 28, 36, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+#cs-root:hover .cs-panel,
+#cs-root .cs-panel:focus-within { opacity: 1; }
+#cs-root .cs-panel button {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font: 700 11px/1.3 system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif;
+  color: #c9d3de;
+  transition: background-color 0.2s, color 0.2s;
+}
+#cs-root .cs-panel button:hover { background: rgba(255, 255, 255, 0.12); }
+#cs-root .cs-panel button:focus-visible { outline: 2px solid #5cc8ff; outline-offset: 1px; }
+#cs-root .cs-panel .cs-lvl[aria-pressed="true"] { background: var(--cs-body); color: #17202b; }
+#cs-root .cs-panel .cs-icon { padding: 3px 6px; color: #9aa6b2; position: relative; }
+#cs-root .cs-sync[aria-pressed="false"] { opacity: 0.4; }
+#cs-root .cs-sync[aria-pressed="true"][data-status="found"]::after {
+  content: "";
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #4ade80;
+}
+
+/* ---------- collapsed bubble ---------- */
+#cs-root .cs-mini {
+  all: unset;
+  box-sizing: border-box;
+  display: none;
+  position: relative;
+  pointer-events: auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(24, 28, 36, 0.92);
+  border: 2px solid var(--cs-shade);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  touch-action: none;
+  transition: border-color 0.8s;
+}
+#cs-root .cs-mini:focus-visible { outline: 2px solid #5cc8ff; outline-offset: 2px; }
+#cs-root .cs-mini svg.cs-bot { left: 4px; top: 12px; width: 36px; height: 20px; }
+#cs-root.cs-collapsed .cs-stack { display: none; }
+#cs-root.cs-collapsed .cs-mini { display: block; }
+
+/* ---------- perf / accessibility ---------- */
+#cs-root.cs-paused *,
+#cs-root.cs-paused *::before,
+#cs-root.cs-paused *::after {
+  animation-play-state: paused !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  #cs-root .cs-float,
+  #cs-root .cs-shake,
+  #cs-root .cs-hair-in,
+  #cs-root .cs-fr,
+  #cs-root .cs-p,
+  #cs-root .cs-glow,
+  #cs-root .cs-ground {
+    animation: none !important;
+  }
+  #cs-root .cs-fr.f0 { opacity: 1; }
+}
+
+
+/* While the mascot drives claude.ai's own Effort menu, keep that menu invisible. */
+html[data-cs-applying] [data-cds-overlay="menu"],
+html[data-cs-applying] [role="menu"] {
+  opacity: 0 !important;
+}
+
+/* ---------- quick chat card ---------- */
+#cs-root .cs-qc {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 14px);
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(56vh, 480px);
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  border-radius: 18px;
+  background: rgba(16, 22, 56, 0.72);
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 45%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 18px 50px rgba(0, 0, 0, 0.45);
+  color: #e9eefc;
+  user-select: text;
+  -webkit-user-select: text;
+  animation: cs-qc-in 0.22s ease-out;
+}
+#cs-root .cs-qc[hidden] { display: none; }
+#cs-root[data-effort="extra"] .cs-qc { bottom: calc(100% + 40px); }
+#cs-root[data-effort="max"] .cs-qc { bottom: calc(100% + 76px); }
+@keyframes cs-qc-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+#cs-root .cs-qc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px 6px 14px;
+}
+#cs-root .cs-qc-title { font-weight: 800; font-size: 12.5px; letter-spacing: 0.02em; }
+#cs-root .cs-qc-status { flex: 1; font-size: 11px; font-weight: 600; color: #9fb3e6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#cs-root .cs-qc-icon,
+#cs-root .cs-qc-btn {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: #cdd8f5;
+  transition: background-color 0.15s, color 0.15s, opacity 0.15s;
+}
+#cs-root .cs-qc-icon { width: 24px; height: 24px; font-size: 15px; }
+#cs-root .cs-qc-icon:hover,
+#cs-root .cs-qc-btn:hover { background: rgba(255, 255, 255, 0.12); }
+#cs-root .cs-qc-icon:focus-visible,
+#cs-root .cs-qc-btn:focus-visible { outline: 2px solid #8fb4ff; outline-offset: 1px; }
+#cs-root .cs-qc-reply {
+  flex: 1;
+  min-height: 48px;
+  overflow-y: auto;
+  padding: 4px 14px 10px;
+  font: 500 13px/1.5 system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #dfe7fb;
+}
+#cs-root .cs-qc-foot {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+#cs-root .cs-qc-input {
+  all: unset;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 38px;
+  max-height: 120px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font: 500 13px/1.4 system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif;
+  color: #f2f5ff;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  resize: none;
+  field-sizing: content;
+}
+#cs-root .cs-qc-input::placeholder { color: rgba(220, 228, 255, 0.45); }
+#cs-root .cs-qc-input:focus { border-color: rgba(143, 180, 255, 0.6); box-shadow: 0 0 0 3px rgba(110, 140, 255, 0.18); }
+#cs-root .cs-qc-btn { width: 38px; height: 38px; font-size: 16px; background: rgba(255, 255, 255, 0.08); }
+#cs-root .cs-qc-send { background: rgba(120, 150, 255, 0.35); color: #fff; }
+#cs-root .cs-qc-send:disabled { opacity: 0.4; cursor: default; }
+#cs-root .cs-qc-mic[aria-pressed="true"] {
+  background: rgba(255, 80, 110, 0.55);
+  color: #fff;
+  animation: cs-mic-pulse 1.1s ease-in-out infinite;
+}
+@keyframes cs-mic-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 90, 120, 0.55); }
+  50% { box-shadow: 0 0 0 6px rgba(255, 90, 120, 0); }
+}
+
+/* mascot moods while chatting */
+#cs-root.cs-thinking .cs-eyes-n,
+#cs-root.cs-thinking .cs-eyes-a { animation: cs-look 1s steps(1) infinite; }
+@keyframes cs-look {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+#cs-root.cs-thinking .cs-float { animation-duration: 1.4s; }
+@keyframes cs-think {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+#cs-root.cs-listening .cs-stage::after {
+  content: "🎙";
+  position: absolute;
+  right: -6px;
+  top: 6px;
+  font-size: 18px;
+  animation: cs-think 0.9s ease-in-out infinite;
+}

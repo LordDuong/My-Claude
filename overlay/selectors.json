@@ -1,0 +1,126 @@
+{
+  "_comment": "Claude Studio selectors. Edit freely when claude.ai changes its UI, then press Ctrl+R in the app. Every list is tried in order; invalid selectors are skipped silently. Checked against claude.ai (Chat, Cowork and Code views) on 2026-11-24.",
+  "version": 3,
+  "chatInput": [
+    "[data-cds=\"ChatComposer\"]",
+    "[data-testid=\"chat-input\"]",
+    "[data-testid=\"code-prompt-input\"]",
+    "div.ProseMirror[contenteditable=\"true\"]",
+    "div[contenteditable=\"true\"][role=\"textbox\"]",
+    "textarea"
+  ],
+  "effortSelectors": [
+    "[data-testid=\"model-selector-dropdown\"]",
+    "[data-testid=\"environment-row-model\"]",
+    "button[data-cds=\"ModelSelector\"]",
+    "[data-testid=\"effort-selector\"]",
+    "button[aria-label*=\"effort\" i]"
+  ],
+  "effortKeywords": {
+    "max": [
+      "max",
+      "maximum",
+      "tối đa"
+    ],
+    "extra": [
+      "extra"
+    ],
+    "high": [
+      "high",
+      "cao"
+    ],
+    "medium": [
+      "medium",
+      "trung bình"
+    ],
+    "low": [
+      "low",
+      "thấp"
+    ]
+  },
+  "effortApply": {
+    "_comment": "Mascot → claude.ai: open 'trigger', find the menu item whose first word is in effortItemText, then the option whose first word matches levelText. Set enabled=false to make the mascot purely cosmetic again.",
+    "enabled": true,
+    "trigger": [
+      "[data-testid=\"model-selector-dropdown\"]",
+      "[data-testid=\"environment-row-model\"]",
+      "button[data-cds=\"ModelSelector\"]"
+    ],
+    "menu": "[role=\"menu\"]",
+    "effortItem": "[role=\"menuitem\"][aria-haspopup=\"menu\"]",
+    "effortItemText": [
+      "effort"
+    ],
+    "option": "[role=\"menuitemradio\"]",
+    "levelText": {
+      "low": [
+        "low"
+      ],
+      "medium": [
+        "medium"
+      ],
+      "high": [
+        "high"
+      ],
+      "extra": [
+        "extra"
+      ],
+      "max": [
+        "max"
+      ]
+    }
+  },
+  "modelSync": {
+    "_comment": "Fallback when the button shows no effort (e.g. a model without effort levels): map the model name to a mascot form. Set enabled=false to turn off.",
+    "enabled": true,
+    "selectors": [
+      "[data-testid=\"model-selector-dropdown\"]",
+      "[data-testid=\"environment-row-model\"]",
+      "button[data-cds=\"ModelSelector\"]"
+    ],
+    "keywords": {
+      "high": [
+        "opus",
+        "fable"
+      ],
+      "medium": [
+        "sonnet"
+      ],
+      "low": [
+        "haiku"
+      ]
+    }
+  },
+  "quickChat": {
+    "_comment": "Quick chat on the mascot: puts your text in claude.ai's composer (Chat/Cowork: chat-input, Code: code-prompt-input) and presses its Send button. Mic: 'dictate' buttons are toggled on/off; 'dictateHold' buttons (Code view) are held down while you talk. Reply: last assistant message, else the last Prose block.",
+    "editor": [
+      "[data-testid=\"chat-input\"]",
+      "[data-testid=\"code-prompt-input\"]",
+      "div.ProseMirror[contenteditable=\"true\"]",
+      "[data-cds=\"ChatComposer\"] [contenteditable=\"true\"]"
+    ],
+    "send": [
+      "[data-testid=\"chat-input-send\"]",
+      "[data-testid=\"code-prompt-send\"]",
+      "button[aria-label=\"Send message\"]",
+      "[data-cds=\"ChatComposer\"] button[aria-label=\"Send\"]"
+    ],
+    "dictate": [
+      "button[aria-label=\"Dictate\"]",
+      "button[aria-label*=\"dictat\" i]"
+    ],
+    "reply": [
+      "[data-testid=\"assistant-message\"]",
+      "[data-cds=\"AssistantMessage\"]",
+      "[data-cds=\"Prose\"]"
+    ],
+    "replyText": [
+      ".standard-markdown",
+      "[data-cds=\"Prose\"]"
+    ],
+    "dictateHold": [
+      "button[aria-label=\"Press and hold to record\"]",
+      "button[aria-label*=\"hold to record\" i]"
+    ]
+  }
+}

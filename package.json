@@ -1,0 +1,52 @@
+{
+  "name": "claude-studio",
+  "productName": "Claude Studio",
+  "version": "0.1.0",
+  "description": "Desktop wrapper for claude.ai with a cute robot mascot overlay (Fedora / KDE / Wayland friendly).",
+  "main": "main.js",
+  "desktopName": "claude-studio.desktop",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "start:debug": "electron . --studio-debug",
+    "start:egl": "electron . --studio-egl",
+    "start:nogpu": "electron . --studio-no-gpu",
+    "start:x11": "electron . --studio-x11",
+    "dist": "electron-builder --linux AppImage"
+  },
+  "devDependencies": {
+    "electron": "^39.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "local.claude-studio",
+    "productName": "Claude Studio",
+    "executableName": "claude-studio",
+    "artifactName": "Claude-Studio-${version}-${arch}.${ext}",
+    "files": [
+      "main.js",
+      "overlay/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Network",
+      "icon": "assets/icon.png",
+      "synopsis": "claude.ai desktop wrapper with a robot mascot",
+      "desktop": {
+        "entry": {
+          "Name": "Claude Studio",
+          "StartupWMClass": "claude-studio",
+          "Keywords": "claude;ai;chat;"
+        }
+      }
+    }
+  }
+}
